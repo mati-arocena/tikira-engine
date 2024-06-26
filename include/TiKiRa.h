@@ -12,15 +12,20 @@ namespace TiKiRa
         
         void Run(const std::string& title);
 
-        void SetTick(std::function<void(void)> tick) { Tick = tick; }
-
+        void SetRenderFunction(std::function<void(void)> renderFunction) { Render = renderFunction; }
+        void SetUpdateFunction(std::function<void(void)> updateFunction) { Update = updateFunction; }
+        
         Engine(Engine const&) = delete;
         void operator=(Engine const&) = delete;
     private:
         Engine() = default;
         ~Engine() = default;
 
-        std::function<void(void)> Tick;
+        std::function<void(void)> Render;
+        std::function<void(void)> Update;
+    
+        void TickUpdate();
+        void TickRender();
     };
 
     struct Color

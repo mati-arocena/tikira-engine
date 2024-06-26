@@ -17,12 +17,26 @@ void TiKiRa::Engine::Run(const std::string& title)
 
     while (window.IsRunning())    
     {
-        BeginDrawing();
-        ClearBackground({245,245,245,255});
-        if (Tick)
-        {
-            Tick();
-        }
-        EndDrawing();
+        TickUpdate();
+        TickRender();
     }
+}
+
+void TiKiRa::Engine::TickUpdate()
+{
+    if (Update)
+    {
+        Update();
+    }
+}
+
+void TiKiRa::Engine::TickRender()
+{
+    BeginDrawing();
+    ClearBackground({245,245,245,255});
+    if (Render)
+    {
+        Render();
+    }
+    EndDrawing();
 }
