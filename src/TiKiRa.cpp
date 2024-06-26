@@ -1,44 +1,33 @@
 #include "TiKiRa.h"
-
 #include "raylib.h"
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
-void TiKiRa::Run()
+TiKiRa::Engine& TiKiRa::Engine::GetInstance()
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    static Engine instance;
+    return instance;
+}
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+TiKiRa::Engine::Engine()
+{
+    InitWindow(800, 450, "TiKiRa Engine");
+    SetTargetFPS(60);
+}
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+TiKiRa::Engine::~Engine()
+{
+    CloseWindow();
+}
 
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+void TiKiRa::Engine::Run()
+{
+    while (!WindowShouldClose())    
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
-
-        // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-
-            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-
+        ClearBackground({RAYWHITE});
+        if (Tick)
+        {
+            Tick();
+        }
         EndDrawing();
-        //----------------------------------------------------------------------------------
     }
-
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
 }
