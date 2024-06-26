@@ -1,4 +1,7 @@
 #include "TiKiRa.h"
+
+#include "Window.h"
+
 #include "raylib.h"
 
 TiKiRa::Engine& TiKiRa::Engine::GetInstance()
@@ -7,23 +10,15 @@ TiKiRa::Engine& TiKiRa::Engine::GetInstance()
     return instance;
 }
 
-TiKiRa::Engine::Engine()
+void TiKiRa::Engine::Run(const std::string& title)
 {
-    InitWindow(800, 450, "TiKiRa Engine");
+    Window window(800, 450, title);
     SetTargetFPS(60);
-}
 
-TiKiRa::Engine::~Engine()
-{
-    CloseWindow();
-}
-
-void TiKiRa::Engine::Run()
-{
-    while (!WindowShouldClose())    
+    while (window.IsRunning())    
     {
         BeginDrawing();
-        ClearBackground({RAYWHITE});
+        ClearBackground({245,245,245,255});
         if (Tick)
         {
             Tick();
