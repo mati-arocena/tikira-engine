@@ -26,6 +26,7 @@ namespace TiKiRa
     
         void TickUpdate();
         void TickRender();
+
     };
 
     struct Color
