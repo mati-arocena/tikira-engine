@@ -7,9 +7,11 @@
 #include <SDL2/SDL_opengles2.h>
 #endif
 
+#include <array>
+
 GLuint LoadShader(GLenum type, const char *shaderSrc) {
     GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &shaderSrc, NULL);
+    glShaderSource(shader, 1, &shaderSrc, nullptr);
     glCompileShader(shader);
     return shader;
 }
@@ -48,14 +50,14 @@ void mainLoop(void* mainLoopArg)
 
 int main(int argc, char** argv)
 {
-    int winWidth = 1024, winHeight = 1024;
+    int winWidth = 512, winHeight = 512;
 
     // Create SDL window
     SDL_Window *pWindow = 
         SDL_CreateWindow("Hello Triangle Minimal", 
                          SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                          winWidth, winHeight, 
-                         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+                         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);

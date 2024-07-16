@@ -1,8 +1,31 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.20)
 project(TiKiRa)
-set(CMAKE_CXX_STANDARD 20)
 
-# Check if using Emscripten
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(TIDY "Run clang-tidy" ON)
+option(USE_ASAN "Build with AddressSanitizer" OFF)
+option(USE_MSAN "Build with MemorySanitizer" OFF)
+
+if(TIDY)
+    set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set_property(SOURCE ${SOURCES} PROPERTY COMPILE_OPTIONS -Wall -Werror -Wextra -Wpedantic)
+elseif(MSVC)
+    target_compile_options(TiKiRa PRIVATE /W4 /WX)
+endif()
+
+if(USE_ASAN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer -g")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
+elseif(USE_MSAN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=memory -fno-omit-frame-pointer -g")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=memory")
+endif()
+
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html") # This line changes the output to HTML
     set(USE_FLAGS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1")
