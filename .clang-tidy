@@ -8,6 +8,7 @@ Checks: >
   clang-analyzer-*,
   cppcoreguidelines-*,
   hicpp-*,
+  -hicpp-signed-bitwise,
   google-*
 
 FormatStyle: "google"
