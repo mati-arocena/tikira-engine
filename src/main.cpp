@@ -8,16 +8,31 @@
 #endif
 
 #include <array>
+#include <format>
+#include <string>
 
 const int VERTEX_NUMBER = 9;
 const int WINDOW_WIDTH = 512;
 const int WINDOW_HEIGHT = 512;
+
+const float MILLIS = 1000.0F;
 
 GLuint LoadShader(GLenum type, const char *shaderSrc) {
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &shaderSrc, nullptr);
     glCompileShader(shader);
     return shader;
+}
+
+void TestLog()
+{
+#ifdef __EMSCRIPTEN__
+    EM_ASM_({
+        console.log("EM_ASM: Log: " + $0);
+    }, static_cast<float>(SDL_GetTicks()) / MILLIS);
+#else
+    SDL_Log("[%.3f] INFO: Log", static_cast<float>(SDL_GetTicks()) / MILLIS); // NOLINT (cppcoreguidelines-pro-type-vararg)
+#endif
 }
 
 void mainLoop(void* mainLoopArg) 
@@ -47,12 +62,16 @@ void mainLoop(void* mainLoopArg)
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
+    
+    TestLog();
 
     SDL_GL_SwapWindow(pWindow);
 }
 
 int main(int argc, char** argv)
 {
+    TestLog();
+
    	SDL_Window *pWindow = 
         SDL_CreateWindow("Hello Triangle Minimal", 
                          SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

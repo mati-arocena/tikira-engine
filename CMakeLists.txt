@@ -34,7 +34,6 @@ else()
     add_subdirectory(external/SDL)
 endif()
 
-
 file(GLOB PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
