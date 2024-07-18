@@ -31,13 +31,7 @@ if(EMSCRIPTEN)
     set(USE_FLAGS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
 else()
-    include(FetchContent)
-    FetchContent_Declare(
-      SDL2
-      GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-      GIT_TAG release-2.30.5
-    )
-    FetchContent_MakeAvailable(SDL2)
+    add_subdirectory(external/SDL)
 endif()
 
 
