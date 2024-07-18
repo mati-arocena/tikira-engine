@@ -53,7 +53,7 @@ void mainLoop(void* mainLoopArg)
 
 int main(int argc, char** argv)
 {
-    SDL_Window *pWindow = 
+   	SDL_Window *pWindow = 
         SDL_CreateWindow("Hello Triangle Minimal", 
                          SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                          WINDOW_WIDTH, WINDOW_HEIGHT, 
