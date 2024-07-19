@@ -7,9 +7,12 @@
 #include <SDL2/SDL_opengles2.h>
 #endif
 
+#include "Window.h"
+
 #include <array>
 #include <format>
 #include <string>
+#include <memory>
 
 const int VERTEX_NUMBER = 9;
 const int WINDOW_WIDTH = 512;
@@ -43,7 +46,7 @@ void mainLoop(void* mainLoopArg)
         1.0F,-1.0F, 0.0F   // Right vertex
     };
 
-    auto* pWindow = static_cast<SDL_Window*>(mainLoopArg);
+    auto* pWindow = static_cast<tikira::Window*>(mainLoopArg);
     
     GLuint vertexShader = LoadShader(GL_VERTEX_SHADER, "attribute vec4 position; void main() { gl_Position = position; }");
     GLuint fragmentShader = LoadShader(GL_FRAGMENT_SHADER, "precision mediump float; void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); }");
@@ -65,27 +68,18 @@ void mainLoop(void* mainLoopArg)
     
     TestLog();
 
-    SDL_GL_SwapWindow(pWindow);
+    pWindow->SwapBuffers();
 }
 
 int main(int argc, char** argv)
 {
     TestLog();
 
-   	SDL_Window *pWindow = 
-        SDL_CreateWindow("Hello Triangle Minimal", 
-                         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                         WINDOW_WIDTH, WINDOW_HEIGHT, 
-                         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    SDL_GL_CreateContext(pWindow);
+    auto pWindow = std::make_unique<tikira::Window>("OpenGL ES 2.0", WINDOW_WIDTH, WINDOW_HEIGHT);
 
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    void* mainLoopArg = pWindow;
+    void* mainLoopArg = pWindow.get();
 
 #ifdef __EMSCRIPTEN__
     int fps = 0; // Use browser's requestAnimationFrame
