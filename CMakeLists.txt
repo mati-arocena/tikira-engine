@@ -27,7 +27,7 @@ elseif(USE_MSAN)
 endif()
 
 if(EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html") # This line changes the output to HTML
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
     set(USE_FLAGS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
 else()
@@ -38,7 +38,19 @@ file(GLOB PROJECT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# Additional includes for other dependencies or conditional settings
+if(EMSCRIPTEN)
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${ADDITIONAL_EMSDK_PATHS}
+    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
+        "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1 -I${CMAKE_CURRENT_SOURCE_DIR}/include"
+    )
+endif()
 
 if(EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME} "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1")

@@ -24,7 +24,7 @@ configure-desktop:
 
 configure-web:
 	@mkdir -p build/web
-	@cd build/web && emcmake cmake ../..
+	@cd build/web && emcmake cmake -DEMSCRIPTEN=ON -DCMAKE_TOOLCHAIN_FILE=${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake ../..
 
 run-web:
 	@cd build/web && python3 -m http.server
@@ -33,5 +33,5 @@ run-desktop:
 	@cd build/desktop && ./TiKiRa
 
 clean:
-	@rm -rf build/desktop
-	@rm -rf build/web
+	@ find build -mindepth 1 ! -name '.clang-tidy' -exec rm -rf {} +
+
