@@ -24,7 +24,7 @@ configure-desktop:
 
 configure-web:
 	@mkdir -p build/web
-	@cd build/web && emcmake cmake -DEMSCRIPTEN=ON -DCMAKE_TOOLCHAIN_FILE=${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake ../..
+	@cd build/web && emcmake cmake -DEMSCRIPTEN=ON ../..
 
 run-web:
 	@cd build/web && python3 -m http.server

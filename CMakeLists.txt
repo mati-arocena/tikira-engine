@@ -28,7 +28,7 @@ endif()
 
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set(USE_FLAGS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1")
+    set(USE_FLAGS "-s USE_SDL=2")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
 else()
     add_subdirectory(external/SDL)
@@ -42,18 +42,19 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Additional includes for other dependencies or conditional settings
 if(EMSCRIPTEN)
     target_include_directories(${PROJECT_NAME} PUBLIC
         ${ADDITIONAL_EMSDK_PATHS}
     )
-    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
-        "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1 -I${CMAKE_CURRENT_SOURCE_DIR}/include"
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+        COMPILE_FLAGS "-I${CMAKE_CURRENT_SOURCE_DIR}/include"
     )
-endif()
-
-if(EMSCRIPTEN)
-    target_link_libraries(${PROJECT_NAME} "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINK_FLAGS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1"
+    )
 else()
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${SDL_INCLUDE_DIRS}
+    )
     target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2::SDL2main GLESv2)
 endif()
