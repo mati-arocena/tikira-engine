@@ -9,6 +9,7 @@
 
 #include "Window.h"
 #include "Launch.h"
+#include "Log.h"
 
 #include <array>
 #include <format>
@@ -27,18 +28,6 @@ GLuint LoadShader(GLenum type, const char *shaderSrc) {
     glShaderSource(shader, 1, &shaderSrc, nullptr);
     glCompileShader(shader);
     return shader;
-}
-
-void TestLog()
-{
-#ifdef __EMSCRIPTEN__
-    EM_ASM_({
-        console.log("EM_ASM: Log: " + $0);
-    }, static_cast<float>(SDL_GetTicks()) / MILLIS);
-    std::cout << "[" << static_cast<float>(SDL_GetTicks()) / MILLIS << "] INFO: Log \n";
-#else
-    SDL_Log("[%.3f] INFO: Log", static_cast<float>(SDL_GetTicks()) / MILLIS); // NOLINT (cppcoreguidelines-pro-type-vararg)
-#endif
 }
 
 void mainLoop() 
@@ -67,12 +56,12 @@ void mainLoop()
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
 
-    TestLog();
+    TK_LOG_INFO("Drawing triangle");
 }
 
 int main(int argc, char** argv)
 {
-    TestLog();
+    TK_LOG_INFO("Starting OpenGL ES 2.0");
 
     auto window = std::make_shared<tikira::Window>("OpenGL ES 2.0", WINDOW_WIDTH, WINDOW_HEIGHT);
     tikira::Launch launch(window, mainLoop);
