@@ -1,3 +1,13 @@
+#include "Application.h"
+#include "Window.h"
+#include "Log.h"
+
+#include <array>
+#include <format>
+#include <string>
+#include <memory>
+#include <iostream>
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <SDL.h>
@@ -7,21 +17,9 @@
 #include <SDL2/SDL_opengles2.h>
 #endif
 
-#include "Window.h"
-#include "Launch.h"
-#include "Log.h"
-
-#include <array>
-#include <format>
-#include <string>
-#include <memory>
-#include <iostream>
-
 const int VERTEX_NUMBER = 9;
 const int WINDOW_WIDTH = 512;
 const int WINDOW_HEIGHT = 512;
-
-const float MILLIS = 1000.0F;
 
 GLuint LoadShader(GLenum type, const char *shaderSrc) {
     GLuint shader = glCreateShader(type);
@@ -56,31 +54,38 @@ void mainLoop()
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
 
-    TK_LOG_INFO("Drawing triangle");
 }
 
-int main(int argc, char** argv)
+class TestApp : public tikira::Application
 {
-    TK_LOG_INFO("Starting OpenGL ES 2.0");
-
-    auto window = std::make_shared<tikira::Window>("OpenGL ES 2.0", WINDOW_WIDTH, WINDOW_HEIGHT);
-    tikira::Launch launch(window, mainLoop);
-
-#ifndef __EMSCRIPTEN__
-    bool quit = false;
-    while (!quit)
+public:
+    void Tick() override
     {
+#ifndef __EMSCRIPTEN__
         SDL_Event event;
         while (SDL_PollEvent(&event) != 0)
         {
             if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
             {
-                quit = true;
+                TK_LOG_INFO("Shutting down...");
+                Shutdown();
             }
         }
-        launch.Tick();
-    }
 #endif
+        mainLoop();
+    }
+};
+
+int main(int argc, char** argv)
+{
+    TK_LOG_INFO("Starting OpenGL ES 2.0");
+
+    TestApp App;
+
+    auto window = std::make_shared<tikira::Window>("OpenGL ES 2.0", WINDOW_WIDTH, WINDOW_HEIGHT);
+    App.InitModule(window);
+
+    App.Run();
 
     return 0;
 }

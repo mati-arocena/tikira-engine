@@ -2,12 +2,8 @@
 
 #include <iostream>
 #include <iomanip>
-
-#ifdef __EMSCRIPTEN__
-#include <SDL.h>
-#else
-#include <SDL2/SDL.h>
-#endif
+#include <mutex>
+#include <sstream>
 
 #ifdef TK_DEBUG
 #define TK_LOG_INFO(...) tikira::Log::LogMessage(tikira::LogLevel::Info, __VA_ARGS__)
@@ -34,15 +30,19 @@ class Log
 public:
     template <typename... Args>
     static void LogMessage(LogLevel level, Args&&... args) {
-        std::cout << std::fixed;
-        std::cout << std::setprecision(3);
-        std::cout << "[" << static_cast<float>(SDL_GetTicks64()) / TO_MILLIS << "] ";
-        std::cout << LogLevelToString(level);
-        LogRecursive(std::forward<Args>(args)...);
-        std::cout << "\n";
+        std::ostringstream oss;
+        oss << std::fixed;
+        oss << std::setprecision(3);
+        oss << "[" << GetTime() << "] ";
+        oss << LogLevelToString(level);
+        LogRecursive(oss, std::forward<Args>(args)...);
+        oss << "\n";
+        std::lock_guard<std::mutex> lock(log_mutex);
+        std::cout << oss.str();
     }
 
 private:
+    static std::mutex log_mutex;
     static constexpr float TO_MILLIS = 1000.0F;
 
     inline static const char* LogLevelToString(LogLevel level) {
@@ -50,18 +50,19 @@ private:
             case LogLevel::Info:    return "[INFO] ";
             case LogLevel::Warning: return "[WARN] ";
             case LogLevel::Error:   return "[ERROR] ";
-            default:      return "[UNKNOWN] ";
+            default:                return "[UNKNOWN] ";
         }
     }
 
-    static void LogRecursive() {}
+    static void LogRecursive(std::ostringstream& oss) {}
 
     template <typename T, typename... Args>
-    static void LogRecursive(T&& arg, Args&&... args) {
-        std::cout << arg;
-        LogRecursive(std::forward<Args>(args)...);
+    static void LogRecursive(std::ostringstream& oss, T&& arg, Args&&... args) {
+        oss << arg;
+        LogRecursive(oss, std::forward<Args>(args)...);
     }
-};
 
+    static float GetTime();
+};
 
 } // namespace tikira
