@@ -31,6 +31,8 @@ Window::Window(const char* title, int width, int height)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     pImpl->m_Context.reset(SDL_GL_CreateContext(pImpl->m_Window.get()));
+
+    glViewport(0, 0, width, height);
 }
 
 void Window::SwapBuffers()

@@ -8,11 +8,13 @@
 #endif
 
 #include "Window.h"
+#include "Launch.h"
 
 #include <array>
 #include <format>
 #include <string>
 #include <memory>
+#include <iostream>
 
 const int VERTEX_NUMBER = 9;
 const int WINDOW_WIDTH = 512;
@@ -33,12 +35,13 @@ void TestLog()
     EM_ASM_({
         console.log("EM_ASM: Log: " + $0);
     }, static_cast<float>(SDL_GetTicks()) / MILLIS);
+    std::cout << "[" << static_cast<float>(SDL_GetTicks()) / MILLIS << "] INFO: Log \n";
 #else
     SDL_Log("[%.3f] INFO: Log", static_cast<float>(SDL_GetTicks()) / MILLIS); // NOLINT (cppcoreguidelines-pro-type-vararg)
 #endif
 }
 
-void mainLoop(void* mainLoopArg) 
+void mainLoop() 
 {
     std::array<GLfloat, VERTEX_NUMBER> vertices = {
         0.0F, 1.0F, 0.0F,  // Top vertex
@@ -46,8 +49,6 @@ void mainLoop(void* mainLoopArg)
         1.0F,-1.0F, 0.0F   // Right vertex
     };
 
-    auto* pWindow = static_cast<tikira::Window*>(mainLoopArg);
-    
     GLuint vertexShader = LoadShader(GL_VERTEX_SHADER, "attribute vec4 position; void main() { gl_Position = position; }");
     GLuint fragmentShader = LoadShader(GL_FRAGMENT_SHADER, "precision mediump float; void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); }");
 
@@ -65,27 +66,18 @@ void mainLoop(void* mainLoopArg)
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
-    
-    TestLog();
 
-    pWindow->SwapBuffers();
+    TestLog();
 }
 
 int main(int argc, char** argv)
 {
     TestLog();
 
-    auto pWindow = std::make_unique<tikira::Window>("OpenGL ES 2.0", WINDOW_WIDTH, WINDOW_HEIGHT);
+    auto window = std::make_shared<tikira::Window>("OpenGL ES 2.0", WINDOW_WIDTH, WINDOW_HEIGHT);
+    tikira::Launch launch(window, mainLoop);
 
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    void* mainLoopArg = pWindow.get();
-
-#ifdef __EMSCRIPTEN__
-    int fps = 0; // Use browser's requestAnimationFrame
-    emscripten_set_main_loop_arg(mainLoop, mainLoopArg, fps, true);
-#else
-
+#ifndef __EMSCRIPTEN__
     bool quit = false;
     while (!quit)
     {
@@ -97,10 +89,8 @@ int main(int argc, char** argv)
                 quit = true;
             }
         }
-
-        mainLoop(mainLoopArg);
+        launch.Tick();
     }
-
 #endif
 
     return 0;
