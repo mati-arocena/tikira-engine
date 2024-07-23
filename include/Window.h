@@ -16,14 +16,14 @@ class Window : public IModule {
         void Tick() override;
         void Shutdown() override;
     private:
+        class WindowImpl;
+        std::unique_ptr<WindowImpl> pImpl;
+
         const char* m_title;
         int m_width;
         int m_height;
 
         void SwapBuffers();
-
-        class WindowImpl;
-        std::unique_ptr<WindowImpl> pImpl;
 };
 
 } // namespace tikira

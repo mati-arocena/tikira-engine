@@ -76,7 +76,7 @@ public:
     }
 };
 
-int main(int argc, char** argv)
+int main()
 {
     TK_LOG_INFO("Starting OpenGL ES 2.0");
 
