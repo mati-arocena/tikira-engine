@@ -54,7 +54,7 @@ private:
         }
     }
 
-    static void LogRecursive(std::ostringstream& oss) {}
+    static void LogRecursive(std::ostringstream&) {}
 
     template <typename T, typename... Args>
     static void LogRecursive(std::ostringstream& oss, T&& arg, Args&&... args) {
