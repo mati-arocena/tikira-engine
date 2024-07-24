@@ -3,7 +3,7 @@
 all: desktop
 
 desktop:
-	@if [ ! -d "build/desktop" ]; then $(MAKE) configure-desktop; fi
+	@if [ ! -f "build/desktop/CMakeCache.txt" ]; then $(MAKE) configure-desktop; fi
 	@cd build/desktop && cmake --build .
 
 web:

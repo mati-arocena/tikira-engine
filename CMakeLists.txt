@@ -8,21 +8,17 @@ option(TIDY "Run clang-tidy" OFF)
 option(USE_ASAN "Build with AddressSanitizer" OFF)
 option(USE_MSAN "Build with MemorySanitizer" OFF)
 
+
 if(EMSCRIPTEN)
-    set(BUILD_SUBDIRECTORY "web")
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set(USE_FLAGS "-s USE_SDL=2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
 else()
-    set(BUILD_SUBDIRECTORY "desktop")
     add_subdirectory(external)
 endif()
 
-set(PROJECT_BUILD_DIR ${CMAKE_BINARY_DIR}/${BUILD_SUBDIRECTORY})
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BUILD_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BUILD_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BUILD_DIR}/bin)
-
 if(TIDY)
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy;")
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -54,9 +50,13 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(EMSCRIPTEN)
+    target_include_directories(${PROJECT_NAME} PUBLIC
+        ${ADDITIONAL_EMSDK_PATHS}
+    )
     set_target_properties(${PROJECT_NAME} PROPERTIES 
-        SUFFIX ".html"
-        COMPILE_OPTIONS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1"
+        COMPILE_FLAGS "-I${CMAKE_CURRENT_SOURCE_DIR}/include"
+    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES
         LINK_FLAGS "-s USE_SDL=2 -s FULL_ES2=1 -s WASM=1"
     )
 else()
